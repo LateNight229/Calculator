@@ -2,8 +2,8 @@
 <html lang="vi">
 <head>
   <link rel="manifest" href="manifest.json">
-
-<link rel="apple-touch-icon" href="icon-192.png">
+  
+<link rel="apple-touch-icon" href="icon-512.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Calculator">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -21,7 +21,8 @@
       font-family: "Segoe UI", Arial, sans-serif;
     }
 
-    :root {
+    :root,
+    body.theme-dark {
       --bg-1: #020617;
       --bg-2: #0f172a;
       --card: rgba(30, 41, 59, 0.72);
@@ -34,10 +35,10 @@
       --border: rgba(255,255,255,0.14);
     }
 
-    body.light {
+    body.theme-light {
       --bg-1: #dbeafe;
       --bg-2: #f8fafc;
-      --card: rgba(255, 255, 255, 0.72);
+      --card: rgba(255, 255, 255, 0.78);
       --button: rgba(15, 23, 42, 0.08);
       --button-hover: rgba(15, 23, 42, 0.14);
       --text: #0f172a;
@@ -45,6 +46,32 @@
       --accent: #2563eb;
       --accent-hover: #3b82f6;
       --border: rgba(15,23,42,0.12);
+    }
+
+    body.theme-neon {
+      --bg-1: #050014;
+      --bg-2: #12002f;
+      --card: rgba(20, 10, 45, 0.78);
+      --button: rgba(168, 85, 247, 0.16);
+      --button-hover: rgba(236, 72, 153, 0.25);
+      --text: #fdf4ff;
+      --muted: #c084fc;
+      --accent: #ec4899;
+      --accent-hover: #f472b6;
+      --border: rgba(236, 72, 153, 0.28);
+    }
+
+    body.theme-windows {
+      --bg-1: #0f4c81;
+      --bg-2: #0078d4;
+      --card: rgba(255, 255, 255, 0.18);
+      --button: rgba(255, 255, 255, 0.18);
+      --button-hover: rgba(255, 255, 255, 0.28);
+      --text: #ffffff;
+      --muted: #dbeafe;
+      --accent: #0078d4;
+      --accent-hover: #38bdf8;
+      --border: rgba(255,255,255,0.25);
     }
 
     body {
@@ -149,6 +176,21 @@
       color: var(--text);
       cursor: pointer;
       font-size: 15px;
+    }
+
+    .theme-select {
+    height: 38px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--button);
+    color: var(--text);
+    padding: 0 10px;
+    outline: none;
+    cursor: pointer;
+  }
+
+    .theme-select option {
+      color: #111827;
     }
 
     .screen {
@@ -308,6 +350,67 @@
       color: var(--muted);
       font-size: 13px;
     }
+    .custom-select-wrapper {
+  position: relative;
+  width: 150px;
+  font-size: 14px;
+}
+
+    .custom-select {
+      position: relative;
+      background: var(--button);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      color: var(--text);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .custom-select .selected {
+      padding: 8px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .custom-select .selected::after {
+      content: "▾";
+      margin-left: 8px;
+      font-size: 12px;
+    }
+
+    .custom-select .options {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      display: none;
+      z-index: 10;
+      margin-top: 4px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+    }
+
+    .custom-select .option {
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: 0.12s;
+    }
+
+    .custom-select .option:hover {
+      background: var(--button-hover);
+    }
+
+    .custom-select .option.selected {
+      font-weight: 600;
+    }
+
+    .custom-select.open .options {
+      display: block;
+    }
 
     @media (max-width: 820px) {
       body {
@@ -340,7 +443,7 @@
   </style>
 </head>
 
-<body>
+<body class="theme-dark">
   <div class="bg-orb orb-1"></div>
   <div class="bg-orb orb-2"></div>
   <div class="bg-orb orb-3"></div>
@@ -351,7 +454,17 @@
         <div class="title">Calculator</div>
         <div class="actions">
           <button class="icon-btn" onclick="copyResult()" title="Copy result">⧉</button>
-          <button class="icon-btn" onclick="toggleTheme()" title="Toggle theme">☀</button>
+          <div class="custom-select-wrapper">
+          <div class="custom-select" id="themeSelect">
+            <div class="selected">Dark Glass</div>
+            <div class="options">
+              <div data-value="theme-dark" class="option selected">Dark Glass</div>
+              <div data-value="theme-light" class="option">Light</div>
+              <div data-value="theme-neon" class="option">Neon</div>
+              <div data-value="theme-windows" class="option">Windows Blue</div>
+            </div>
+          </div>
+        </div>
         </div>
       </div>
 
@@ -652,9 +765,54 @@
       }, 1300);
     }
 
-    function toggleTheme() {
-      document.body.classList.toggle("light");
+    const themeSelect = document.getElementById("themeSelect");
+
+    function changeTheme(theme) {
+      document.body.className = theme;
+      localStorage.setItem("calculator-theme", theme);
     }
+
+    function loadTheme() {
+  const savedTheme = localStorage.getItem("calculator-theme") || "theme-dark";
+  document.body.className = savedTheme;
+}
+
+    loadTheme();
+
+    const customSelect = document.getElementById("themeSelect");
+    const selectedDiv = customSelect.querySelector(".selected");
+    const optionsDiv = customSelect.querySelector(".options");
+    const options = optionsDiv.querySelectorAll(".option");
+
+    options.forEach(option => {
+      if (option.getAttribute("data-value") === document.body.className) {
+        selectedDiv.textContent = option.textContent;
+        option.classList.add("selected");
+      }
+    });
+
+    selectedDiv.addEventListener("click", () => {
+      customSelect.classList.toggle("open");
+    });
+
+    options.forEach(option => {
+      option.addEventListener("click", () => {
+        selectedDiv.textContent = option.textContent;
+
+        options.forEach(o => o.classList.remove("selected"));
+        option.classList.add("selected");
+
+        changeTheme(option.getAttribute("data-value"));
+
+        customSelect.classList.remove("open");
+      });
+    });
+
+    document.addEventListener("click", e => {
+      if (!customSelect.contains(e.target)) {
+        customSelect.classList.remove("open");
+      }
+    });
 
     document.addEventListener("keydown", function(e) {
       if (!Number.isNaN(Number(e.key))) appendNumber(e.key);
