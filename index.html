@@ -677,6 +677,14 @@
   color: #ff4d4d;
 }
 
+/* khi có background custom */
+body.has-custom-bg {
+  --card: rgba(15, 23, 42, 0.01);
+  --button: rgba(255, 255, 255, 0.05);
+  --button-hover: rgba(255, 255, 255, 0.11);
+  --border: rgba(255,255,255,0.10);
+}
+
 /* animation nhẹ cho dropdown */
 @keyframes dropFade {
   from {
@@ -1257,6 +1265,8 @@
 
       localStorage.removeItem("calculator-bg");
 
+      document.body.classList.remove("has-custom-bg");
+
       applyThemeBackground();
 
       showToast("Background Removed");
@@ -1294,12 +1304,15 @@
         `;
 
         localStorage.setItem("calculator-bg", image);
+        
+        document.body.classList.add("has-custom-bg");
 
         showToast("Background Updated");
 
       };
 
       reader.readAsDataURL(file);
+      
 
     }
 
@@ -1313,6 +1326,8 @@ function loadBackground() {
 
   }
 
+  document.body.classList.add("has-custom-bg");
+
   document.body.style.background = `
     linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)),
     url(${savedBg}) center/cover no-repeat
@@ -1323,7 +1338,13 @@ function loadBackground() {
     const themeSelect = document.getElementById("themeSelect");
 
     function changeTheme(theme) {
-        document.body.className = theme;
+        // giữ lại has-custom-bg nếu đang có
+      const hasBg = document.body.classList.contains("has-custom-bg");
+      document.body.className = theme;
+
+        if (hasBg) {
+        document.body.classList.add("has-custom-bg");
+      }
 
       localStorage.setItem("calculator-theme", theme);
 
@@ -1335,9 +1356,9 @@ function loadBackground() {
     }
 
     function loadTheme() {
-  const savedTheme = localStorage.getItem("calculator-theme") || "theme-dark";
-  document.body.className = savedTheme;
-}
+      const savedTheme = localStorage.getItem("calculator-theme") || "theme-dark";
+      document.body.classList.add(savedTheme);
+    }
 
     loadTheme();
 
