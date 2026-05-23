@@ -718,40 +718,7 @@
         <!-- ----------------------------- ACTIONS ----------------------------- -->
         <div class="actions">
 
-          <!-- ===================== UTILS MENU ===================== -->
-
-          <div class="utils-menu" id="utilsMenu">
-
-            <button class="icon-btn" onclick="toggleUtilsMenu()">
-              ☰
-            </button>
-
-            <div class="utils-dropdown" id="utilsDropdown">
-
-              <div class="utils-item" onclick="toggleCurrencyBox()">
-                💱 Currency Converter
-              </div>
-
-              <div 
-                class="utils-item"
-                onclick="document.getElementById('bgUpload').click()"
-              >
-                🖼 Change Background
-              </div>
-
-            </div>
-
-          </div>
-
-          <!-- ===================== COPY ===================== -->
-
-          <button 
-            class="icon-btn" 
-            onclick="copyResult()" 
-            title="Copy result"
-          >
-            ⧉
-          </button>
+          <div class="actions">
 
           <!-- ===================== THEME ===================== -->
 
@@ -784,6 +751,42 @@
             </div>
 
           </div>
+
+          <!-- ===================== COPY ===================== -->
+
+          <button 
+            class="icon-btn" 
+            onclick="copyResult()" 
+            title="Copy result"
+          >
+            ⧉
+          </button>
+
+          <!-- ===================== UTILS MENU ===================== -->
+
+          <div class="utils-menu" id="utilsMenu">
+
+            <button class="icon-btn" onclick="toggleUtilsMenu()">
+              ☰
+            </button>
+
+            <div class="utils-dropdown" id="utilsDropdown">
+
+              <div class="utils-item" onclick="toggleCurrencyBox()">
+                💱 Currency Converter
+              </div>
+
+              <div 
+              class="utils-item"
+              onclick="openBackgroundPicker()"
+            >
+              🖼 Change Background
+            </div>
+            </div>
+
+          </div>
+
+        </div>
 
         </div>
 
@@ -939,9 +942,22 @@
 
     function toggleCurrencyBox() {
 
-      const box = document.getElementById("currencyBox");
+        const box = document.getElementById("currencyBox");
 
       box.classList.toggle("hidden");
+
+      // đóng utils menu sau khi click
+      utilsDropdown.classList.remove("show");
+
+    }
+
+    function openBackgroundPicker() {
+
+      // đóng dropdown trước
+      utilsDropdown.classList.remove("show");
+
+      // mở file picker
+      document.getElementById("bgUpload").click();
 
     }
 
@@ -1386,6 +1402,7 @@ function loadBackground() {
 
     function startPress(e) {
        // không hold trên button
+      if (e.target.closest(".app")) return;
       if (e.target.closest("button")) return;
 
       isMenuOpenedByHold = false;
@@ -1400,7 +1417,7 @@ function loadBackground() {
         // đánh dấu menu mở bởi hold
         isMenuOpenedByHold = true;
 
-      }, 500);
+      }, 200);
     }
 
     function cancelPress() {
